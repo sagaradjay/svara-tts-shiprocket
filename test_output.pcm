@@ -1,0 +1,1 @@
+{"detail":"Error generating audio: Cannot connect to host localhost:8000 ssl:default [Connect call failed ('127.0.0.1', 8000)]"}

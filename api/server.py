@@ -286,6 +286,22 @@ async def text_to_speech(
             logger.info(f"Prompt built: {len(prompt)} token IDs")
             logger.info(f"Token ID preview (first 50): {prompt[:50]}")
             logger.info(f"Token ID preview (last 50): {prompt[-50:]}")
+            # Convert token IDs back to text since vLLM doesn't support prompt_token_ids
+            # Note: This may not perfectly preserve special tokens, but vLLM will re-tokenize
+            logger.info("Starting token ID to text conversion...")
+            try:
+                import torch
+                prompt_tensor = torch.tensor([prompt], dtype=torch.int64)
+                logger.info(f"Created tensor with shape: {prompt_tensor.shape}")
+                prompt = tokenizer.decode(prompt_tensor[0], skip_special_tokens=False)
+                logger.info(f"✓ Converted token IDs to text (length: {len(prompt)} chars)")
+                logger.info(f"Prompt type after conversion: {type(prompt)}")
+            except Exception as exc:
+                logger.error(f"✗ Failed to decode token IDs to text: {exc}", exc_info=True)
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to convert prompt token IDs to text: {exc}"
+                ) from exc
         else:
             logger.info(f"Prompt built (length: {len(prompt)} chars)")
             logger.info(f"Prompt preview (first 500 chars): {prompt[:500]}")

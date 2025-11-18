@@ -46,9 +46,9 @@ services:
     volumes:
       # Cache Hugging Face models to avoid re-downloading
       - huggingface_cache:/root/.cache/huggingface
-      # Optional: Mount local code for development
-      # - ./tts_engine:/app/tts_engine
-      # - ./api:/app/api
+      # Mount local code for development (enabled for testing)
+      - ./tts_engine:/app/tts_engine
+      - ./api:/app/api
     
     # Restart policy
     restart: unless-stopped

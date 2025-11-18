@@ -1,0 +1,1 @@
+{"detail":"Error generating audio: 400, message='Bad Request', url='http://localhost:8000/v1/completions'"}

@@ -1,10 +1,13 @@
 
 from __future__ import annotations
 import json
+import logging
 from typing import Iterator, AsyncIterator, Optional, Dict, Any, Union, List
 import requests
 import aiohttp
 from .timing import track_time
+
+logger = logging.getLogger(__name__)
 class VLLMCompletionsTransport:
     """
     Sync transport for OpenAI-compatible /v1/completions streaming (SSE).
@@ -90,6 +93,10 @@ class VLLMCompletionsTransportAsync:
 
         async with aiohttp.ClientSession() as sess:
             async with sess.post(self.url, headers=self.headers, json=payload) as resp:
+                if resp.status != 200:
+                    error_body = await resp.text()
+                    logger.error(f"vLLM request failed with status {resp.status}: {error_body}")
+                    logger.error(f"Request payload: {payload}")
                 resp.raise_for_status()
                 async for raw in resp.content:
                     line = raw.decode("utf-8", errors="ignore").strip()
